@@ -14,6 +14,7 @@
 #include "int128_impl.h"
 #include "scalar_impl.h"
 #include "testrand_impl.h"
+#include "testutil.h"
 
 #define MAX_N_KEYS 30
 
@@ -49,19 +50,6 @@ static void run_test(bench_data* data, int iters) {
     run_benchmark(str, bench_whitelist, bench_whitelist_setup, NULL, data, 100, iters);
 }
 
-static void random_scalar_order(secp256k1_scalar *num) {
-    do {
-        unsigned char b32[32];
-        int overflow = 0;
-        secp256k1_testrand256(b32);
-        secp256k1_scalar_set_b32(num, b32, &overflow);
-        if (overflow || secp256k1_scalar_is_zero(num)) {
-            continue;
-        }
-        break;
-    } while(1);
-}
-
 int main(void) {
     bench_data data;
     size_t i;
@@ -72,7 +60,7 @@ int main(void) {
     data.ctx = secp256k1_context_create(SECP256K1_CONTEXT_NONE);
 
     /* Start with subkey */
-    random_scalar_order(&ssub);
+    testutil_random_scalar_order(&ssub);
     secp256k1_scalar_get_b32(data.csub, &ssub);
     CHECK(secp256k1_ec_seckey_verify(data.ctx, data.csub) == 1);
     CHECK(secp256k1_ec_pubkey_create(data.ctx, &data.sub_pubkey, data.csub) == 1);
@@ -81,12 +69,12 @@ int main(void) {
         secp256k1_scalar son, soff;
 
         /* Create two keys */
-        random_scalar_order(&son);
+        testutil_random_scalar_order(&son);
         secp256k1_scalar_get_b32(data.online_seckey[i], &son);
         CHECK(secp256k1_ec_seckey_verify(data.ctx, data.online_seckey[i]) == 1);
         CHECK(secp256k1_ec_pubkey_create(data.ctx, &data.online_pubkeys[i], data.online_seckey[i]) == 1);
 
-        random_scalar_order(&soff);
+        testutil_random_scalar_order(&soff);
         secp256k1_scalar_get_b32(data.summed_seckey[i], &soff);
         CHECK(secp256k1_ec_seckey_verify(data.ctx, data.summed_seckey[i]) == 1);
         CHECK(secp256k1_ec_pubkey_create(data.ctx, &data.offline_pubkeys[i], data.summed_seckey[i]) == 1);

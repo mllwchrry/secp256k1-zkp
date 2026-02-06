@@ -8,6 +8,7 @@
 #define SECP256K1_MODULE_WHITELIST_TESTS_H
 
 #include "../../../include/secp256k1_whitelist.h"
+#include "../../testutil.h"
 
 static void test_whitelist_end_to_end_internal(const unsigned char *summed_seckey, const unsigned char *online_seckey, const secp256k1_pubkey *online_pubkeys, const secp256k1_pubkey *offline_pubkeys, const secp256k1_pubkey *sub_pubkey, const size_t signer_i, const size_t n_keys) {
         unsigned char serialized[32 + 4 + 32 * SECP256K1_WHITELIST_MAX_N_KEYS] = {0};
@@ -54,7 +55,7 @@ static void test_whitelist_end_to_end(const size_t n_keys, int test_all_keys) {
     /* Generate random keys */
     size_t i;
     /* Start with subkey */
-    random_scalar_order_test(&ssub);
+    testutil_random_scalar_order_test(&ssub);
     secp256k1_scalar_get_b32(csub, &ssub);
     CHECK(secp256k1_ec_seckey_verify(CTX, csub) == 1);
     CHECK(secp256k1_ec_pubkey_create(CTX, &sub_pubkey, csub) == 1);
@@ -66,12 +67,12 @@ static void test_whitelist_end_to_end(const size_t n_keys, int test_all_keys) {
         summed_seckey[i] = (unsigned char *) malloc(32);
 
         /* Create two keys */
-        random_scalar_order_test(&son);
+        testutil_random_scalar_order_test(&son);
         secp256k1_scalar_get_b32(online_seckey[i], &son);
         CHECK(secp256k1_ec_seckey_verify(CTX, online_seckey[i]) == 1);
         CHECK(secp256k1_ec_pubkey_create(CTX, &online_pubkeys[i], online_seckey[i]) == 1);
 
-        random_scalar_order_test(&soff);
+        testutil_random_scalar_order_test(&soff);
         secp256k1_scalar_get_b32(summed_seckey[i], &soff);
         CHECK(secp256k1_ec_seckey_verify(CTX, summed_seckey[i]) == 1);
         CHECK(secp256k1_ec_pubkey_create(CTX, &offline_pubkeys[i], summed_seckey[i]) == 1);
@@ -88,7 +89,7 @@ static void test_whitelist_end_to_end(const size_t n_keys, int test_all_keys) {
             test_whitelist_end_to_end_internal(summed_seckey[i], online_seckey[i], online_pubkeys, offline_pubkeys, &sub_pubkey, i, n_keys);
         }
     } else {
-        uint32_t rand_idx = secp256k1_testrand_int(n_keys-1);
+        uint32_t rand_idx = testrand_int(n_keys-1);
         test_whitelist_end_to_end_internal(summed_seckey[0], online_seckey[0], online_pubkeys, offline_pubkeys, &sub_pubkey, 0, n_keys);
         test_whitelist_end_to_end_internal(summed_seckey[rand_idx], online_seckey[rand_idx], online_pubkeys, offline_pubkeys, &sub_pubkey, rand_idx, n_keys);
         test_whitelist_end_to_end_internal(summed_seckey[n_keys-1], online_seckey[n_keys-1], online_pubkeys, offline_pubkeys, &sub_pubkey, n_keys-1, n_keys);
