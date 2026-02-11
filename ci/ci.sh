@@ -83,7 +83,6 @@ esac
     --enable-module-bppp="$BPPP" \
     --enable-module-rangeproof="$RANGEPROOF" --enable-module-whitelist="$WHITELIST" --enable-module-generator="$GENERATOR" \
     --enable-module-schnorrsig="$SCHNORRSIG" --enable-module-ecdsa-adaptor="$ECDSAADAPTOR" \
-    --enable-module-schnorrsig="$SCHNORRSIG" \
     --enable-module-musig="$MUSIG" \
     --enable-module-schnorrsig-halfagg="$SCHNORRSIG_HALFAGG" \
     --enable-examples="$EXAMPLES" \

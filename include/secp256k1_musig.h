@@ -543,6 +543,7 @@ SECP256K1_API int secp256k1_musig_partial_sign(
  *       before aggregating it with `musig_nonce_agg` and using the result to
  *       create the `session` with `musig_nonce_process`.
  *
+ *  This function is essential when using protocols with adaptor signatures.
  *  It is not required to call this function in regular MuSig sessions, because
  *  if any partial signature does not verify, the final signature will not
  *  verify either, so the problem will be caught. However, this function

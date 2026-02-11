@@ -34,7 +34,7 @@ static int create_keypair_and_pk(secp256k1_keypair *keypair, secp256k1_pubkey *p
     return ret;
 }
 
-/* Just a simple (non-tweaked) 2-of-2 MuSig aggregate, sign, verify
+/* Just a simple (non-adaptor, non-tweaked) 2-of-2 MuSig aggregate, sign, verify
  * test. */
 static void musig_simple_test(void) {
     unsigned char sk[2][32];
