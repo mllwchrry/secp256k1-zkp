@@ -34,5 +34,5 @@ int main(void) {
     run_benchmark("bppp_verify_bit", bench_bppp, bench_bppp_setup, NULL, &data, 10, iters);
 
     secp256k1_context_destroy(data.ctx);
-    return 0;
+    return EXIT_SUCCESS;
 }
