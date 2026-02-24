@@ -39,6 +39,13 @@
         for (i = 0; i < repeat; i++)                \
             fn##_internal();                        \
     }
+#define REPEAT_TEST_DIV_ADD(fn, divider, addition)  \
+    static void fn(void) {                          \
+        int i;                                      \
+        int repeat = COUNT / (divider) + (addition);\
+        for (i = 0; i < repeat; i++)                \
+            fn##_internal();                        \
+    }
 
 
 

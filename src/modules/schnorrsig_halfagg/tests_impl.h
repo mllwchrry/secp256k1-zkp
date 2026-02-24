@@ -2,6 +2,7 @@
 #define SECP256K1_MODULE_SCHNORRSIG_HALFAGG_TESTS_H
 
 #include "../../../include/secp256k1_schnorrsig_halfagg.h"
+#include "../../unit_test.h"
 
 #define N_MAX 50
 
@@ -36,7 +37,7 @@ void test_schnorrsig_aggregate_input_helper(secp256k1_xonly_pubkey *pubkeys, uns
  * aggregate some of them in one shot, and then
  * aggregate the others incrementally to the already aggregated ones.
  * The aggregate signature should verify after both steps. */
-void test_schnorrsig_aggregate(void) {
+void test_schnorrsig_aggregate_internal(void) {
     secp256k1_xonly_pubkey pubkeys[N_MAX];
     unsigned char msgs32[N_MAX*32];
     unsigned char sigs64[N_MAX*64];
@@ -167,7 +168,7 @@ void test_schnorrsig_aggverify_spec_vectors(void) {
     }
 }
 
-static void test_schnorrsig_aggregate_api(void) {
+static void test_schnorrsig_aggregate_api_internal(void) {
     size_t n = testrand_int(N_MAX + 1);
     size_t n_initial = testrand_int(n + 1);
     size_t n_new = n - n_initial;
@@ -243,7 +244,7 @@ static void test_schnorrsig_aggregate_api(void) {
 
 /* In this test, we make sure that trivial attempts to break
  * the security of verification do not work. */
-static void test_schnorrsig_aggregate_unforge(void) {
+static void test_schnorrsig_aggregate_unforge_internal(void) {
     secp256k1_xonly_pubkey pubkeys[N_MAX];
     unsigned char msgs32[N_MAX*32];
     unsigned char sigs64[N_MAX*64];
@@ -299,7 +300,7 @@ static void test_schnorrsig_aggregate_unforge(void) {
 
 /* In this test, we make sure that the algorithms properly reject
  * for overflowing and non parseable values. */
-static void test_schnorrsig_aggregate_overflow(void) {
+static void test_schnorrsig_aggregate_overflow_internal(void) {
     secp256k1_xonly_pubkey pubkeys[N_MAX];
     unsigned char msgs32[N_MAX*32];
     unsigned char sigs64[N_MAX*64];
@@ -319,20 +320,16 @@ static void test_schnorrsig_aggregate_overflow(void) {
     }
 }
 
-static void run_schnorrsig_halfagg_tests(void) {
-    int i;
+/* --- Test registry --- */
+REPEAT_TEST(test_schnorrsig_aggregate)
+REPEAT_TEST(test_schnorrsig_aggregate_api)
+REPEAT_TEST(test_schnorrsig_aggregate_unforge)
+REPEAT_TEST(test_schnorrsig_aggregate_overflow)
 
-    test_schnorrsig_sha256_tagged_aggregate();
-    test_schnorrsig_aggverify_spec_vectors();
-
-    for (i = 0; i < COUNT; i++) {
-        test_schnorrsig_aggregate();
-        test_schnorrsig_aggregate_api();
-        test_schnorrsig_aggregate_unforge();
-        test_schnorrsig_aggregate_overflow();
-    }
-}
-
+static const struct tf_test_entry tests_schnorrsig_halfagg[] = {
+    CASE1(test_schnorrsig_sha256_tagged_aggregate),
+    CASE1(test_schnorrsig_aggverify_spec_vectors),
+};
 #undef N_MAX
 
 #endif
