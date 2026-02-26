@@ -20,16 +20,13 @@ static void secp256k1_nonce_function_dleq_sha256_tagged(secp256k1_sha256 *sha) {
 /* algo argument for nonce_function_ecdsa_adaptor to derive the nonce using a tagged hash function. */
 static const unsigned char dleq_algo[] = {'D','L','E','Q'};
 
-static int secp256k1_dleq_hash_point(secp256k1_sha256 *sha, secp256k1_ge *p) {
+static void secp256k1_dleq_hash_point(secp256k1_sha256 *sha, secp256k1_ge *p) {
     unsigned char buf[33];
     size_t size = 33;
 
-    if (!secp256k1_eckey_pubkey_serialize(p, buf, &size, 1)) {
-        return 0;
-    }
+    secp256k1_eckey_pubkey_serialize33(p, buf);
 
     secp256k1_sha256_write(sha, buf, size);
-    return 1;
 }
 
 static int secp256k1_dleq_nonce(secp256k1_scalar *k, const unsigned char *sk32, const unsigned char *gen2_33, const unsigned char *p1_33, const unsigned char *p2_33, secp256k1_nonce_function_hardened_ecdsa_adaptor noncefp, void *ndata) {
@@ -97,18 +94,14 @@ static int secp256k1_dleq_prove(const secp256k1_context* ctx, secp256k1_scalar *
     unsigned char p1_33[33];
     unsigned char p2_33[33];
     int ret = 1;
-    size_t pubkey_size = 33;
 
     secp256k1_scalar_get_b32(sk32, sk);
-    if (!secp256k1_eckey_pubkey_serialize(gen2, gen2_33, &pubkey_size, 1)) {
+    if (secp256k1_ge_is_infinity(gen2) || secp256k1_ge_is_infinity(p1) || secp256k1_ge_is_infinity(p2)) {
         return 0;
     }
-    if (!secp256k1_eckey_pubkey_serialize(p1, p1_33, &pubkey_size, 1)) {
-        return 0;
-    }
-    if (!secp256k1_eckey_pubkey_serialize(p2, p2_33, &pubkey_size, 1)) {
-        return 0;
-    }
+    secp256k1_eckey_pubkey_serialize33(gen2, gen2_33);
+    secp256k1_eckey_pubkey_serialize33(p1, p1_33);
+    secp256k1_eckey_pubkey_serialize33(p2, p2_33);
 
     ret &= secp256k1_dleq_nonce(&k, sk32, gen2_33, p1_33, p2_33, noncefp, ndata);
     /* R1 = k*G, R2 = k*Y */

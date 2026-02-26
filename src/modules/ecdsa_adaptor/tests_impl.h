@@ -38,7 +38,6 @@ static void dleq_tests_internal(void) {
     unsigned char p2_33[33];
     unsigned char aux_rand[32];
     int i;
-    size_t pubkey_size = 33;
 
     rand_point(&gen2);
     rand_scalar(&sk);
@@ -69,9 +68,9 @@ static void dleq_tests_internal(void) {
 
     /* Nonce tests */
     secp256k1_scalar_get_b32(sk32, &sk);
-    CHECK(secp256k1_eckey_pubkey_serialize(&gen2, gen2_33, &pubkey_size, 1));
-    CHECK(secp256k1_eckey_pubkey_serialize(&p1, p1_33, &pubkey_size, 1));
-    CHECK(secp256k1_eckey_pubkey_serialize(&p2, p2_33, &pubkey_size, 1));
+    secp256k1_eckey_pubkey_serialize33(&gen2, gen2_33);
+    secp256k1_eckey_pubkey_serialize33(&p1, p1_33);
+    secp256k1_eckey_pubkey_serialize33(&p2, p2_33);
     CHECK(secp256k1_dleq_nonce(&k, sk32, gen2_33, p1_33, p2_33, NULL, NULL) == 1);
 
     testrand_bytes_test(sk32, sizeof(sk32));
