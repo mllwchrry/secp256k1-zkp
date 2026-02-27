@@ -96,7 +96,6 @@ static int secp256k1_dleq_prove(const secp256k1_context* ctx, secp256k1_scalar *
     unsigned char p1_33[33];
     unsigned char p2_33[33];
     size_t pubkey_size = 33;
-    int ret;
 
     secp256k1_scalar_get_b32(sk32, sk);
     if (!secp256k1_eckey_pubkey_serialize(gen2, gen2_33, &pubkey_size, 1)) {
@@ -109,8 +108,9 @@ static int secp256k1_dleq_prove(const secp256k1_context* ctx, secp256k1_scalar *
         return 0;
     }
 
-    ret = secp256k1_dleq_nonce(&k, sk32, gen2_33, p1_33, p2_33, noncefp, ndata);
-    secp256k1_scalar_cmov(&k, &secp256k1_scalar_one, !ret);
+    if (!secp256k1_dleq_nonce(&k, sk32, gen2_33, p1_33, p2_33, noncefp, ndata)) {
+        return 0;
+    }
     /* R1 = k*G, R2 = k*Y */
     secp256k1_dleq_pair(&ctx->ecmult_gen_ctx, r, &k, gen2);
     /* We declassify the non-secret values r[0] and r[1] to allow using them as
@@ -125,7 +125,7 @@ static int secp256k1_dleq_prove(const secp256k1_context* ctx, secp256k1_scalar *
     secp256k1_scalar_add(s, s, &k);
 
     secp256k1_scalar_clear(&k);
-    return ret;
+    return 1;
 }
 
 static int secp256k1_dleq_verify(const secp256k1_scalar *s, const secp256k1_scalar *e, secp256k1_ge *p1, secp256k1_ge *gen2, secp256k1_ge *p2) {
