@@ -97,7 +97,6 @@ static int secp256k1_dleq_prove(const secp256k1_context* ctx, secp256k1_scalar *
     unsigned char p2_33[33];
     size_t pubkey_size = 33;
 
-    secp256k1_scalar_get_b32(sk32, sk);
     if (!secp256k1_eckey_pubkey_serialize(gen2, gen2_33, &pubkey_size, 1)) {
         return 0;
     }
@@ -108,7 +107,10 @@ static int secp256k1_dleq_prove(const secp256k1_context* ctx, secp256k1_scalar *
         return 0;
     }
 
+    secp256k1_scalar_get_b32(sk32, sk);
+
     if (!secp256k1_dleq_nonce(&k, sk32, gen2_33, p1_33, p2_33, noncefp, ndata)) {
+        secp256k1_memclear(sk32, sizeof(sk32));
         return 0;
     }
     /* R1 = k*G, R2 = k*Y */
@@ -125,6 +127,7 @@ static int secp256k1_dleq_prove(const secp256k1_context* ctx, secp256k1_scalar *
     secp256k1_scalar_add(s, s, &k);
 
     secp256k1_scalar_clear(&k);
+    secp256k1_memclear(sk32, sizeof(sk32));
     return 1;
 }
 
