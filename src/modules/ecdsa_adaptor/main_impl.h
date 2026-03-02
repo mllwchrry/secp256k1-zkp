@@ -202,7 +202,7 @@ int secp256k1_ecdsa_adaptor_encrypt(const secp256k1_context* ctx, unsigned char 
 
     /* dleq_proof = DLEQ_prove(k, (R', Y, R)) */
     if (!secp256k1_dleq_prove(ctx, &dleq_proof_s, &dleq_proof_e, &k, &enckey_ge, &nonce_pts[0], &nonce_pts[1], noncefp, ndata)) {
-        secp256k1_memclear(adaptor_sig162, 162);
+        memset(adaptor_sig162, 0, 162);
         secp256k1_memclear(nonce32, sizeof(nonce32));
         secp256k1_scalar_clear(&k);
         return 0;
