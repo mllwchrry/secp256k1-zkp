@@ -8208,6 +8208,7 @@ static const struct tf_test_entry tests_ec[] = {
     CASE(ec_pubkey_parse_test),
     CASE(eckey_edge_case_test),
     CASE(eckey_negate_test),
+    CASE(ec_commit),
 };
 
 static const struct tf_test_entry tests_ecdsa[] = {
@@ -8229,6 +8230,7 @@ static const struct tf_test_entry tests_utils[] = {
     CASE(secp256k1_is_zero_array_test),
     CASE(secp256k1_byteorder_tests),
     CASE(cmov_tests),
+    CASE(util_tests),
 };
 
 /* Register test modules */
